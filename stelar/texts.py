@@ -11,18 +11,23 @@ HELP = (
     ("Navegar",
      "A grade é um hexágono: o núcleo no centro e anéis em volta. Cima vai para o anel de fora, "
      "baixo para o de dentro. Esquerda e direita andam pelo anel. O analógico esquerdo faz o "
-     "mesmo. Navegar não gasta turno. O som de cada elemento vem da direção da casa: frente, "
+     "mesmo. Ao andar, você ouve o elemento e a posição: as posições contam no sentido "
+     "horário a partir da frente, de 1 a 6 no anel 1 e de 1 a 12 no anel 2. No colapso, as "
+     "posições 1 e 2 do anel 2 caem na posição 1 do anel 1, as 3 e 4 na posição 2, e assim "
+     "por diante. Navegar não gasta turno. O som de cada elemento vem da direção da casa: frente, "
      "direita, trás ou esquerda, e fica mais longe nos anéis de fora."),
     ("Ações",
      "B: colapso gravitacional. Tudo cai uma casa para dentro, e quem cai num parceiro funde. "
+     "O núcleo vai primeiro, depois o anel 1, depois o 2; no mesmo anel, quem está mais perto "
+     "do foco cai primeiro. "
      "X: pressão de radiação. Gasta %d de energia; o anel de fora é soprado para fora da estrela "
      "e o resto sobe uma casa, abrindo espaço. L1 e R1: rotação orbital. O anel em foco gira "
      "uma casa para a esquerda ou para a direita. Cada ação é um turno e traz matéria nova."
      % C.PRESSURE_COST),
     ("Informações",
-     "Select fala o elemento em foco, onde ele está e com o que funde. A lê o anel em foco "
-     "inteiro, do foco para a direita. Y fala pontos, energia, quanto ferro há e o turno. "
-     "Start pausa."),
+     "A diz o que o próximo colapso faria com a casa em foco: para onde o elemento cai, com "
+     "quem funde e o que cai em cima dela. Select lê o anel em foco inteiro, do foco para a "
+     "direita. Y fala pontos, energia, quanto ferro há e o turno. Start pausa."),
     ("Fusões",
      "Iguais fundem: hidrogênio com hidrogênio dá hélio; hélio com hélio, carbono; carbono com "
      "carbono, neônio; oxigênio com oxigênio, silício; silício com silício ou enxofre com "

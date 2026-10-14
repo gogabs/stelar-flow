@@ -25,6 +25,10 @@ ouvindo.
 | 3 | 18 | | 37 |
 
 As casas de cada anel são numeradas no sentido horário a partir da frente.
+As posições são faladas ao navegar ("Hélio, 3"), contando de 1 no sentido
+horário a partir da frente. Com 2 anéis, as posições 1 e 2 do anel 2 caem na
+posição 1 do anel 1, as 3 e 4 na posição 2, e assim por diante.
+
 Cada casa tem uma direção (frente, direita, trás, esquerda e as do meio),
 igual em todos os anéis. No colapso, cada casa cai na casa do anel de
 dentro na mesma direção; no anel 2, duas casas caem em cada casa do anel 1.
@@ -41,8 +45,8 @@ estrela") e tem recorde separado. **[decidir]** se fica só um.
 | B | Colapso gravitacional | sim |
 | X | Pressão de radiação | sim |
 | L1 / R1 | Rotação orbital do anel em foco, para a esquerda / direita | sim |
-| Select | Elemento em foco, onde ele está e com o que funde | não |
-| A | Lê o anel em foco inteiro, do foco para a direita | não |
+| A | Prévia do colapso: para onde o elemento em foco cai, com quem funde e o que cai em cima da casa | não |
+| Select | Lê o anel em foco inteiro, da posição em foco para a direita | não |
 | Y | Pontos, energia, quanto ferro há, turno | não |
 | Start | Pausa | — |
 
@@ -203,9 +207,12 @@ buraco negro.
   esquerda), mais longe nos anéis de fora. A matéria nova toca um blip de
   onde entrou; cada fusão toca um arpejo de onde aconteceu.
 - **Falas curtas**:
-  - navegar: "Anel 2. Hélio" ao trocar de anel; só "Hélio" ao andar;
-  - colapso: "Fusão: 2 hélios e 1 carbono. Mais 22 pontos. No foco,
-    carbono.";
+  - navegar: "Anel 2. Hélio, 3" ao trocar de anel; "Hélio, 3" ao andar;
+  - prévia (A): "Colapso: Hélio cai no anel 1, posição 2 e funde com o
+    carbono de lá: vira oxigênio.";
+  - colapso, até 3 fusões: "Fusão: hélio no núcleo e carbono no anel 1,
+    posição 4. Mais 20 pontos."; com mais, conta: "Fusão: 4 hélios e 1
+    carbono. Mais 44 pontos. No foco, carbono, 3.";
   - ferro: "1 elemento engolido pelo ferro."; "Cuidado, isso é ferro.";
   - pressão: "Pressão de radiação. Vento estelar levou 3 hidrogênios.
     Energia 2.";

@@ -191,9 +191,9 @@ def button(b, st, ms):
     elif b == "y":
         game.say(run.status_text())
     elif b == "a":
-        game.say(run.ring_text())
+        game.say(run.collapse_preview())
     elif b == "select":
-        game.say(run.focus_text())
+        game.say(run.ring_text())
     elif b == "start":
         pause_menu.open()
 

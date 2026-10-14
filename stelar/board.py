@@ -92,9 +92,13 @@ class Board:
         dentro é ferro. Ferro não se move. No mesmo anel, quem está mais
         perto do foco cai primeiro.
 
-        Devolve {"moves": [...], "fusions": [(r, i, produto)], "infected": [(r, i)]}.
+        Devolve {"moves": [...], "fusions": [(r, i, produto)], "infected": [(r, i)],
+        "events": [...]}. "events" tem tudo na ordem em que aconteceu:
+        ("cai", origem, destino, elemento), ("funde", origem, destino, elemento,
+        quem estava lá, produto), ("ferro", origem, destino, elemento) e
+        ("fica", origem, destino, elemento, quem estava lá, já tinha fundido).
         """
-        moves, fusions, infected = [], [], []
+        moves, fusions, infected, events = [], [], [], []
         fused = set()
         for r in range(1, self.rings + 1):
             for i in order_from(r, angle):
@@ -106,15 +110,20 @@ class Board:
                 if target is None:
                     self.cells[pr][pj], self.cells[r][i] = sym, None
                     moves.append(((r, i), (pr, pj)))
+                    events.append(("cai", (r, i), (pr, pj), sym))
                 elif target == E.FE:
                     self.cells[r][i] = E.FE
                     infected.append((r, i))
+                    events.append(("ferro", (r, i), (pr, pj), sym))
                 elif (pr, pj) not in fused and E.fuse(target, sym):
                     product = E.fuse(target, sym)
                     self.cells[pr][pj], self.cells[r][i] = product, None
                     fused.add((pr, pj))
                     fusions.append((pr, pj, product))
-        return {"moves": moves, "fusions": fusions, "infected": infected}
+                    events.append(("funde", (r, i), (pr, pj), sym, target, product))
+                else:
+                    events.append(("fica", (r, i), (pr, pj), sym, target, (pr, pj) in fused))
+        return {"moves": moves, "fusions": fusions, "infected": infected, "events": events}
 
     def pressure(self, angle=0.0):
         """Empurra cada elemento uma casa para fora, se houver casa vazia.

@@ -47,7 +47,7 @@ class NavigationTest(unittest.TestCase):
         clear(run)
         run.board.set(1, 0, E.HE)
         run.ring_out()
-        self.assertEqual(ui.said[-1], "Anel 1. Hélio")
+        self.assertEqual(ui.said[-1], "Anel 1. Hélio, 1")
         self.assertEqual(ui.played[-1], ("elem_he", 1, 0.0))
 
     def test_edges(self):
@@ -67,7 +67,7 @@ class NavigationTest(unittest.TestCase):
         run.ring_out()
         run.step(-1)
         self.assertEqual(run.index, 5)
-        self.assertEqual(ui.said[-1], "Carbono")
+        self.assertEqual(ui.said[-1], "Carbono, 6")
         run.step(1)
         self.assertEqual(run.index, 0)
 
@@ -98,7 +98,7 @@ class ActionTest(unittest.TestCase):
         self.assertTrue(run.collapse())
         self.assertEqual(run.score, E.POINTS[E.HE])
         self.assertEqual(run.turn, 1)
-        self.assertIn("Fusão: 1 hélio. Mais 4 pontos.", ui.said[-1])
+        self.assertIn("Fusão: hélio no núcleo. Mais 4 pontos.", ui.said[-1])
         self.assertIn(("fusao_he", 0, 0.0), ui.played)
 
     def test_combo_bonus(self):
@@ -110,7 +110,7 @@ class ActionTest(unittest.TestCase):
         run.board.set(2, 6, E.HE)
         run.collapse()
         self.assertEqual(run.score, int((4 + 12) * (1 + C.COMBO_STEP)))
-        self.assertIn("1 hélio e 1 carbono", ui.said[-1])
+        self.assertIn("hélio no núcleo e carbono no anel 1, posição 4", ui.said[-1])
 
     def test_collapse_that_moves_nothing_is_not_a_turn(self):
         run, ui, _ = new_run()
@@ -208,19 +208,97 @@ class TextTest(unittest.TestCase):
         run.board.set(1, 3, E.HE)
         run.ring_out()
         self.assertEqual(run.ring_text(),
-                         "Anel 1, do foco para a direita: hidrogênio, 2 vazios, hélio, 2 vazios.")
+                         "Anel 1, da posição 1 para a direita: hidrogênio, 2 vazios, hélio, 2 vazios.")
 
-    def test_focus_text_lists_partners(self):
+    def test_many_fusions_are_counted_instead_of_located(self):
         run, ui, _ = new_run()
         clear(run)
-        run.board.set(0, 0, E.C)
-        text = run.focus_text()
-        self.assertIn("com hélio vira oxigênio", text)
-        self.assertIn("com carbono vira neônio", text)
+        run.board.set(0, 0, E.H)
+        for i in range(6):
+            run.board.set(1, i, E.H)
+            run.board.set(2, 2 * i, E.H)
+        run.collapse()
+        self.assertIn("Fusão: 6 hélios.", ui.said[-1])
 
     def test_status_text(self):
         run, ui, _ = new_run()
         self.assertIn("Energia %d de %d" % (C.START_ENERGY, C.MAX_ENERGY), run.status_text())
+
+
+class PreviewTest(unittest.TestCase):
+    """A: o que o colapso faria com a casa em foco."""
+
+    def setUp(self):
+        self.run, self.ui, _ = new_run()
+        clear(self.run)
+        self.run.ring_out()          # anel 1, posição 1
+
+    def test_falls_into_empty_cell(self):
+        self.run.board.set(1, 0, E.H)
+        self.assertEqual(self.run.collapse_preview(), "Colapso: Hidrogênio cai no núcleo, que está vazio.")
+
+    def test_fuses_with_what_is_inside(self):
+        self.run.board.set(0, 0, E.C)
+        self.run.board.set(1, 0, E.HE)
+        self.assertEqual(self.run.collapse_preview(),
+                         "Colapso: Hélio cai no núcleo e funde com o carbono de lá: vira oxigênio.")
+
+    def test_stays_when_no_fusion(self):
+        self.run.board.set(0, 0, E.C)
+        self.run.board.set(1, 0, E.H)
+        self.assertEqual(self.run.collapse_preview(),
+                         "Colapso: Hidrogênio fica: o núcleo tem carbono, que não funde com hidrogênio.")
+
+    def test_neighbour_closer_to_focus_falls_first(self):
+        self.run.board.set(0, 0, E.H)
+        self.run.board.set(1, 0, E.H)
+        self.run.board.set(1, 1, E.H)
+        self.assertEqual(self.run.collapse_preview(),
+                         "Colapso: Hidrogênio cai no núcleo e funde com o hidrogênio de lá: vira hélio.")
+        self.run.step(1)             # foco na posição 2: agora ela cai primeiro
+        self.assertEqual(self.run.collapse_preview(),
+                         "Colapso: Hidrogênio cai no núcleo e funde com o hidrogênio de lá: vira hélio.")
+        self.run.collapse()
+        self.assertEqual(self.run.board.get(1, 1), None)
+        self.assertEqual(self.run.board.get(1, 0), E.H)
+
+    def test_reports_what_lands_on_the_focus(self):
+        self.run.board.set(1, 0, E.HE)
+        self.run.board.set(0, 0, E.H)
+        self.run.board.set(2, 1, E.HE)
+        text = self.run.collapse_preview()
+        self.assertIn("Hélio fica", text)
+        self.assertIn("O hélio do anel 2, posição 2 cai aqui e funde com o hélio: vira carbono.", text)
+
+    def test_empty_cell_receives(self):
+        self.run.board.set(2, 0, E.H)
+        self.assertEqual(self.run.collapse_preview(),
+                         "Colapso: Aqui cai o hidrogênio do anel 2, posição 1.")
+
+    def test_iron(self):
+        self.run.board.set(1, 0, E.FE)
+        self.run.board.set(2, 1, E.C)
+        self.assertEqual(self.run.collapse_preview(),
+                         "Colapso: Ferro não se move. O carbono do anel 2, posição 2 cai aqui e vira ferro.")
+
+    def test_nothing(self):
+        self.assertEqual(self.run.collapse_preview(), "Colapso: nada acontece aqui.")
+
+    def test_preview_matches_real_collapse_and_changes_nothing(self):
+        for seed in range(30):
+            run, ui, _ = new_run(seed=seed)
+            rng = random.Random(seed)
+            for r, i in run.board.all_cells():
+                run.board.set(r, i, rng.choice([None, None, E.H, E.H, E.HE, E.C, E.O, E.FE]))
+            run.ring, run.angle = 1, rng.randrange(6) / 6.0
+            before = [list(row) for row in run.board.cells]
+            text = run.collapse_preview()
+            self.assertEqual(run.board.cells, before)
+            focus = run.focused()
+            result = run.board.collapse(run.angle)
+            moved = any(ev[1] == (1, run.index) and ev[0] in ("cai", "funde") for ev in result["events"])
+            if focus not in (None, E.FE):
+                self.assertEqual(" cai no " in text and "ferro" not in text.split(".")[0], moved, text)
 
 
 if __name__ == "__main__":
