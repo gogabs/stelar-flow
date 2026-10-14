@@ -11,6 +11,7 @@ from . import config as C
 from . import elements as E
 from .board import Board, angle_of, index_at, ring_size
 from .fates import fate_for
+from .names import at, cell_name, of, the
 
 
 def ring_name(r):
@@ -65,9 +66,16 @@ class Run:
         self.ui.play("%s_%s" % (prefix, sym.lower() if sym else "vazio"),
                      ring=r, angle=angle_of(r, i))
 
+    def focus_label(self):
+        """ "Hélio, Órion Rigel": o elemento e o nome da casa (o núcleo não tem nome)."""
+        text = E.name(self.focused())
+        if self.ring:
+            text += ", " + cell_name(self.ring, self.index)
+        return text
+
     def announce_focus(self, with_ring=False):
         self._play_cell(self.ring, self.index)
-        text = E.name(self.focused())
+        text = self.focus_label()
         if with_ring:
             text = "%s. %s" % (ring_name(self.ring), text)
         self.ui.say(text)
@@ -75,7 +83,7 @@ class Run:
     def ring_out(self):
         if self.ring >= self.rings:
             self.ui.play("borda")
-            self.ui.say("Anel de fora. " + E.name(self.focused()))
+            self.ui.say("Anel de fora. " + self.focus_label())
             return
         self.ring += 1
         self.announce_focus(with_ring=True)
@@ -83,7 +91,7 @@ class Run:
     def ring_in(self):
         if self.ring == 0:
             self.ui.play("borda")
-            self.ui.say("Núcleo. " + E.name(self.focused()))
+            self.ui.say("Núcleo. " + self.focus_label())
             return
         self.ring -= 1
         self.announce_focus(with_ring=True)
@@ -92,7 +100,7 @@ class Run:
         """Esquerda (-1) e direita (+1): anda pelo anel."""
         if self.ring == 0:
             self.ui.play("borda")
-            self.ui.say("Núcleo. " + E.name(self.focused()))
+            self.ui.say("Núcleo. " + self.focus_label())
             return
         n = ring_size(self.ring)
         self.angle = ((self.index + delta) % n) / float(n)
@@ -122,7 +130,10 @@ class Run:
             gained = int(gained * (1 + C.COMBO_STEP * (len(fusions) - 1)))
             self.score += gained
             self.energy = min(C.MAX_ENERGY, self.energy + energy)
-            made = [plural(n, sym) for sym, n in sorted(counts.items(), key=lambda t: E.mass_rank(t[0]))]
+            if len(fusions) <= 3:   # poucas: diz onde cada uma aconteceu
+                made = ["%s %s" % (E.name(p).lower(), at((r, i))) for r, i, p in fusions]
+            else:
+                made = [plural(n, sym) for sym, n in sorted(counts.items(), key=lambda t: E.mass_rank(t[0]))]
             parts.append("Fusão: %s. Mais %d pontos." % (join(made), gained))
             if E.FE in counts:
                 parts.append("Cuidado, isso é ferro.")
@@ -167,10 +178,16 @@ class Run:
             self.ui.play("borda")
             self.ui.say("O núcleo não gira. Suba para um anel.")
             return False
-        self.board.rotate(self.ring, step)
+        side = "direita" if step > 0 else "esquerda"
+        if self.board.slide(self.ring, step, self.index):
+            text = "%s deslizou para a %s: os elementos se juntaram %s %s." % (
+                ring_name(self.ring), side, "até" if step > 0 else "a partir de",
+                cell_name(self.ring, self.index))
+        else:   # já estavam juntos (ou o anel está cheio): gira uma casa
+            self.board.rotate(self.ring, step)
+            text = "%s girou para a %s." % (ring_name(self.ring), side)
         self.ui.play("rotacao")
-        self._end_turn(["%s girou para a %s." % (ring_name(self.ring),
-                                                  "direita" if step > 0 else "esquerda")])
+        self._end_turn([text])
         return True
 
     def _end_turn(self, parts):
@@ -190,7 +207,8 @@ class Run:
             self.ui.say(" ".join(parts))
             self.finish()
             return
-        parts.append("No foco, %s." % E.name(self.focused()).lower())
+        label = self.focus_label()
+        parts.append("No foco, %s." % (label[0].lower() + label[1:]))
         self.ui.say(" ".join(parts))
 
     def finish(self):
@@ -227,17 +245,49 @@ class Run:
             items.append(E.name(sym).lower())
         if empties:
             items.append("vazio" if empties == 1 else "%d vazios" % empties)
-        return "%s, do foco para a direita: %s." % (ring_name(self.ring), ", ".join(items))
+        return "%s, de %s para a direita: %s." % (
+            ring_name(self.ring), cell_name(self.ring, self.index), ", ".join(items))
 
-    def focus_text(self):
-        """Onde está o foco e com o que o elemento funde."""
+    def collapse_preview(self):
+        """O que um colapso agora faria com a casa em foco: para onde o elemento cai,
+        com quem funde, e o que cai em cima dela.
+
+        Simula o colapso numa cópia da grade, com a mesma ordem do colapso de verdade.
+        """
+        cell = (self.ring, self.index)
         sym = self.focused()
-        where = ring_name(self.ring)
-        if self.ring:
-            where += ", posição %d de %d" % (self.index + 1, ring_size(self.ring))
-        if sym is None:
-            return "Vazio. %s." % where
+        sim = Board(self.rings, random.Random(0))
+        sim.cells = [list(row) for row in self.board.cells]
+        events = sim.collapse(self.angle)["events"]
+        parts = []
         if sym == E.FE:
-            return "Ferro. %s. Não se move nem funde; quem cair nele vira ferro." % where
-        fuses = ["com %s vira %s" % (E.name(b).lower(), E.name(p).lower()) for b, p in E.partners(sym)]
-        return "%s. %s. Funde: %s." % (E.name(sym), where, join(fuses))
+            parts.append("Ferro não se move.")
+        elif sym is not None and self.ring == 0:
+            parts.append("%s fica no núcleo." % E.name(sym))
+        for ev in events:
+            kind, src, dst = ev[0], ev[1], ev[2]
+            name = E.name(ev[3]).lower()
+            if src == cell:
+                if kind == "cai":
+                    parts.append("%s cai %s, que está livre." % (E.name(sym), at(dst)))
+                elif kind == "funde":
+                    parts.append("%s cai %s e funde com o %s de lá: vira %s." % (
+                        E.name(sym), at(dst), E.name(ev[4]).lower(), E.name(ev[5]).lower()))
+                elif kind == "ferro":
+                    parts.append("%s cai no ferro %s e vira ferro." % (E.name(sym), of(dst)))
+                elif ev[5]:
+                    parts.append("%s fica: %s já fundiu neste colapso." % (E.name(sym), the(dst)))
+                else:
+                    parts.append("%s fica: %s tem %s, que não funde com %s." % (
+                        E.name(sym), the(dst), E.name(ev[4]).lower(), name))
+            elif dst == cell:
+                if kind == "cai":
+                    parts.append("Aqui cai o %s %s." % (name, of(src)))
+                elif kind == "funde":
+                    parts.append("O %s %s cai aqui e funde com o %s: vira %s." % (
+                        name, of(src), E.name(ev[4]).lower(), E.name(ev[5]).lower()))
+                elif kind == "ferro":
+                    parts.append("O %s %s cai aqui e vira ferro." % (name, of(src)))
+        if not parts:
+            return "Colapso: nada acontece aqui."
+        return "Colapso: " + " ".join(parts)

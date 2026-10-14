@@ -11,18 +11,28 @@ HELP = (
     ("Navegar",
      "A grade é um hexágono: o núcleo no centro e anéis em volta. Cima vai para o anel de fora, "
      "baixo para o de dentro. Esquerda e direita andam pelo anel. O analógico esquerdo faz o "
-     "mesmo. Navegar não gasta turno. O som de cada elemento vem da direção da casa: frente, "
+     "mesmo. Ao andar, você ouve o elemento e o nome da casa. As casas do anel 1 são "
+     "constelações, no sentido horário a partir da frente: Órion, Escorpião, Lira, Touro, "
+     "Cisne e Gêmeos. No anel 2, cada casa tem o nome da constelação onde ela cai mais uma "
+     "estrela, como Órion Betelgeuse e Órion Rigel. No anel 3, o nome da estrela onde ela cai "
+     "mais uma letra grega, como Órion Rigel alfa. O nome diz para onde a casa cai no colapso: "
+     "Órion Rigel alfa cai em Órion Rigel, que cai em Órion, que cai no núcleo. Navegar não gasta turno. O som de cada elemento vem da direção da casa: frente, "
      "direita, trás ou esquerda, e fica mais longe nos anéis de fora."),
     ("Ações",
      "B: colapso gravitacional. Tudo cai uma casa para dentro, e quem cai num parceiro funde. "
+     "O núcleo vai primeiro, depois o anel 1, depois o 2; no mesmo anel, quem está mais perto "
+     "do foco cai primeiro. "
      "X: pressão de radiação. Gasta %d de energia; o anel de fora é soprado para fora da estrela "
-     "e o resto sobe uma casa, abrindo espaço. L1 e R1: rotação orbital. O anel em foco gira "
-     "uma casa para a esquerda ou para a direita. Cada ação é um turno e traz matéria nova."
+     "e o resto sobe uma casa, abrindo espaço. L1 e R1: rotação orbital. Como no 2048, "
+     "os elementos do anel em foco deslizam e se juntam, sem vazios entre eles. R1 desliza para "
+     "a direita e eles param na casa em foco, um atrás do outro; L1 desliza para a esquerda e "
+     "eles começam na casa em foco. Se já estão juntos, o anel só gira uma casa. A ordem dos "
+     "elementos não muda e nada funde. Cada ação é um turno e traz matéria nova."
      % C.PRESSURE_COST),
     ("Informações",
-     "Select fala o elemento em foco, onde ele está e com o que funde. A lê o anel em foco "
-     "inteiro, do foco para a direita. Y fala pontos, energia, quanto ferro há e o turno. "
-     "Start pausa."),
+     "A diz o que o próximo colapso faria com a casa em foco: para onde o elemento cai, com "
+     "quem funde e o que cai em cima dela. Select lê o anel em foco inteiro, do foco para a "
+     "direita. Y fala pontos, energia, quanto ferro há e o turno. Start pausa."),
     ("Fusões",
      "Iguais fundem: hidrogênio com hidrogênio dá hélio; hélio com hélio, carbono; carbono com "
      "carbono, neônio; oxigênio com oxigênio, silício; silício com silício ou enxofre com "

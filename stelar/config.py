@@ -1,8 +1,7 @@
 """Números do equilíbrio do jogo, num lugar só."""
 from . import elements as E
 
-RINGS = 2                 # anéis em volta do núcleo (2 ou 3)
-RING_CHOICES = (2, 3)
+RINGS = 3                 # anéis em volta do núcleo (37 casas)
 
 START_ENERGY = 3
 MAX_ENERGY = 9

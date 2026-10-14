@@ -17,20 +17,39 @@ ouvindo.
 
 ## 2. Grade
 
-| Anel | Casas | Total com 2 anéis | Total com 3 anéis |
-|---|---|---|---|
-| 0 (núcleo) | 1 | | |
-| 1 | 6 | | |
-| 2 | 12 | 19 | |
-| 3 | 18 | | 37 |
+| Anel | Casas |
+|---|---|
+| 0 (núcleo) | 1 |
+| 1 | 6 |
+| 2 | 12 |
+| 3 (o de fora) | 18 |
+| **Total** | **37** |
 
 As casas de cada anel são numeradas no sentido horário a partir da frente.
+Cada casa tem um nome, falado ao navegar ("Hélio, Órion Rigel"), e **o
+nome diz para onde ela cai no colapso** (ideia do Gabs, 14/10):
+
+- **Anel 1:** constelações, no sentido horário a partir da frente: Órion,
+  Escorpião, Lira, Touro, Cisne, Gêmeos.
+- **Anel 2:** a constelação onde a casa cai mais uma estrela dela: Órion
+  Betelgeuse, Órion Rigel, Escorpião Antares, Escorpião Sargas, Lira Vega,
+  Lira Sulafat, Touro Aldebarã, Touro Alcione, Cisne Deneb, Cisne Albireo,
+  Gêmeos Castor, Gêmeos Pólux.
+- **Anel 3:** a estrela onde a casa cai mais uma letra grega: Órion
+  Betelgeuse alfa, Órion Betelgeuse beta, Órion Rigel alfa, Escorpião
+  Antares alfa... Como 18 casas caem em 12, metade das estrelas recebe duas
+  casas (alfa e beta) e a outra metade, uma (só alfa).
+
+Órion Rigel alfa cai em Órion Rigel, que cai em Órion, que cai no núcleo.
+Os nomes ficam nas casas; quando o anel desliza, os elementos mudam de casa.
+
 Cada casa tem uma direção (frente, direita, trás, esquerda e as do meio),
 igual em todos os anéis. No colapso, cada casa cai na casa do anel de
-dentro na mesma direção; no anel 2, duas casas caem em cada casa do anel 1.
+dentro na mesma direção.
 
-**Tamanho:** 2 anéis por padrão. 3 anéis está no menu ("Tamanho da
-estrela") e tem recorde separado. **[decidir]** se fica só um.
+**Tamanho:** a estrela tem sempre 3 anéis (decidido em 14/10). A de 2 anéis
+(19 casas) era pequena demais e permitia partidas infinitas: dava para
+juntar energia e soprar até o núcleo para fora de uma vez.
 
 ## 3. Controles
 
@@ -40,9 +59,9 @@ estrela") e tem recorde separado. **[decidir]** se fica só um.
 | Esquerda / direita (ou analógico) | Anda pelo anel; segurar repete | não |
 | B | Colapso gravitacional | sim |
 | X | Pressão de radiação | sim |
-| L1 / R1 | Rotação orbital do anel em foco, para a esquerda / direita | sim |
-| Select | Elemento em foco, onde ele está e com o que funde | não |
-| A | Lê o anel em foco inteiro, do foco para a direita | não |
+| L1 / R1 | Rotação orbital: desliza o anel em foco para a esquerda / direita, juntando os elementos | sim |
+| A | Prévia do colapso: para onde o elemento em foco cai, com quem funde e o que cai em cima da casa | não |
+| Select | Lê o anel em foco inteiro, da casa em foco para a direita | não |
 | Y | Pontos, energia, quanto ferro há, turno | não |
 | Start | Pausa | — |
 
@@ -71,9 +90,15 @@ se move nem é soprado. É a válvula de escape: sem ela, o núcleo entope com
 um elemento sem parceiro e a estrela morre cedo (testei isso nas
 simulações, seção 8).
 
-**Rotação orbital (L1/R1).** Gira o anel em foco uma casa. Serve para
-alinhar pares antes do colapso e para tirar elementos de cima do ferro. O
-núcleo não gira.
+**Rotação orbital (L1/R1).** Como no 2048: os elementos do anel em foco
+deslizam e se juntam, sem vazios entre eles, usando a casa em foco como
+parede. Com R1 tudo desliza no sentido horário e para na casa em foco,
+um atrás do outro; com L1 desliza no sentido anti-horário e começa na
+casa em foco. A ordem dos elementos no anel não muda, nada funde e o
+ferro desliza junto. Se os elementos já estão juntos (ou o anel está
+cheio), o anel só gira uma casa. Serve para juntar elementos em cima de um
+alvo antes do colapso e para tirar elementos de cima do ferro. O núcleo não
+gira.
 
 **Depois de cada ação** entra matéria nova numa casa vazia do anel de fora:
 hidrogênio (80%), hélio (15%) ou carbono (5%), os três elementos básicos.
@@ -177,17 +202,19 @@ outros.
 
 `tools/simular.py` joga partidas com dois robôs: um que aperta qualquer
 coisa e um guloso, que testa cada ação e escolhe a que deixa a grade
-melhor. Resultado com os números atuais (20 partidas, 2 anéis):
+melhor. Resultado com os números atuais (20 partidas, 3 anéis, rotação
+que desliza):
 
 | Robô | Turnos (mediana) | Pontos (mediana) | Finais |
 |---|---|---|---|
-| Aleatório | 35 | 2 | anã branca de hélio e de carbono |
-| Guloso | 367 (130 a 1678) | 1823 (601 a 7567) | pulsar 14, buraco negro 4, estrela de nêutrons 2 |
+| Aleatório | 58 | 0 | anã branca de hélio 18, de carbono 2 |
+| Guloso | 265 (146 a 509) | 1636 (760 a 3109) | pulsar 20 |
 
-Com 3 anéis o guloso fica em 274 turnos e 1456 pontos. Antes de existir o
-vento estelar o guloso morria com 54 turnos: o núcleo entupia com um
-elemento sem parceiro (enxofre, por exemplo) e o anel de fora enchia de
-hidrogênio sem par.
+Antes de existir o vento estelar o guloso morria com uns 50 turnos: o
+núcleo entupia com um elemento sem parceiro (enxofre, por exemplo) e o anel
+de fora enchia de hidrogênio sem par. O guloso só olha uma jogada à frente
+e não chega aos 4000 pontos do buraco negro; se no console também ficar
+inalcançável, baixamos esse limite.
 
 Uma pessoa deve ficar entre os dois robôs no começo. Números para ajustar
 depois de jogar no console, todos em `stelar/config.py`: custo da pressão,
@@ -203,9 +230,13 @@ buraco negro.
   esquerda), mais longe nos anéis de fora. A matéria nova toca um blip de
   onde entrou; cada fusão toca um arpejo de onde aconteceu.
 - **Falas curtas**:
-  - navegar: "Anel 2. Hélio" ao trocar de anel; só "Hélio" ao andar;
-  - colapso: "Fusão: 2 hélios e 1 carbono. Mais 22 pontos. No foco,
-    carbono.";
+  - navegar: "Anel 2. Hélio, Órion Rigel" ao trocar de anel; "Hélio,
+    Órion Rigel" ao andar;
+  - prévia (A): "Colapso: Hélio cai em Escorpião e funde com o carbono de
+    lá: vira oxigênio.";
+  - colapso, até 3 fusões: "Fusão: hélio no núcleo e carbono em Touro.
+    Mais 20 pontos."; com mais, conta: "Fusão: 4 hélios e 1 carbono. Mais
+    44 pontos. No foco, carbono, Lira.";
   - ferro: "1 elemento engolido pelo ferro."; "Cuidado, isso é ferro.";
   - pressão: "Pressão de radiação. Vento estelar levou 3 hidrogênios.
     Energia 2.";
@@ -220,7 +251,6 @@ buraco negro.
 
 ## 10. Em aberto
 
-- **[decidir]** 2 ou 3 anéis, ou os dois como hoje.
 - **[decidir]** rotação gastar turno (hoje gasta). Sem gastar, o jogo vira
   um quebra-cabeça mais calmo e as partidas ficam bem mais longas.
 - **[decidir]** quais ideias da seção 7 entram.

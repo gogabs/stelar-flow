@@ -92,9 +92,13 @@ class Board:
         dentro é ferro. Ferro não se move. No mesmo anel, quem está mais
         perto do foco cai primeiro.
 
-        Devolve {"moves": [...], "fusions": [(r, i, produto)], "infected": [(r, i)]}.
+        Devolve {"moves": [...], "fusions": [(r, i, produto)], "infected": [(r, i)],
+        "events": [...]}. "events" tem tudo na ordem em que aconteceu:
+        ("cai", origem, destino, elemento), ("funde", origem, destino, elemento,
+        quem estava lá, produto), ("ferro", origem, destino, elemento) e
+        ("fica", origem, destino, elemento, quem estava lá, já tinha fundido).
         """
-        moves, fusions, infected = [], [], []
+        moves, fusions, infected, events = [], [], [], []
         fused = set()
         for r in range(1, self.rings + 1):
             for i in order_from(r, angle):
@@ -106,15 +110,20 @@ class Board:
                 if target is None:
                     self.cells[pr][pj], self.cells[r][i] = sym, None
                     moves.append(((r, i), (pr, pj)))
+                    events.append(("cai", (r, i), (pr, pj), sym))
                 elif target == E.FE:
                     self.cells[r][i] = E.FE
                     infected.append((r, i))
+                    events.append(("ferro", (r, i), (pr, pj), sym))
                 elif (pr, pj) not in fused and E.fuse(target, sym):
                     product = E.fuse(target, sym)
                     self.cells[pr][pj], self.cells[r][i] = product, None
                     fused.add((pr, pj))
                     fusions.append((pr, pj, product))
-        return {"moves": moves, "fusions": fusions, "infected": infected}
+                    events.append(("funde", (r, i), (pr, pj), sym, target, product))
+                else:
+                    events.append(("fica", (r, i), (pr, pj), sym, target, (pr, pj) in fused))
+        return {"moves": moves, "fusions": fusions, "infected": infected, "events": events}
 
     def pressure(self, angle=0.0):
         """Empurra cada elemento uma casa para fora, se houver casa vazia.
@@ -151,12 +160,38 @@ class Board:
         return {"moves": moves, "ejected": ejected}
 
     def rotate(self, r, step):
-        """Gira o anel r; step=1 no sentido horário, -1 no anti-horário."""
+        """Gira o anel r uma casa; step=1 no sentido horário, -1 no anti-horário."""
         if r == 0:
             return False
         row = self.cells[r]
         step %= len(row)
         self.cells[r] = row[-step:] + row[:-step]
+        return True
+
+    def slide(self, r, step, anchor):
+        """Desliza os elementos do anel r no sentido de step até a casa anchor, como no 2048.
+
+        Com step=1 (horário) tudo anda no sentido horário e para ao bater na
+        casa anchor ou num elemento já parado: os elementos ficam juntos,
+        terminando em anchor. Com step=-1 é o espelho: começam em anchor e
+        seguem no sentido horário. A ordem dos elementos não muda e ninguém
+        funde. Devolve True se algo se moveu.
+        """
+        if r == 0:
+            return False
+        row = self.cells[r]
+        n = len(row)
+        if step > 0:   # sequência no sentido anti-horário a partir de anchor
+            order = [(anchor - k) % n for k in range(n)]
+        else:          # sequência no sentido horário a partir de anchor
+            order = [(anchor + k) % n for k in range(n)]
+        items = [row[i] for i in order if row[i] is not None]
+        new = list(row)
+        for k, i in enumerate(order):
+            new[i] = items[k] if k < len(items) else None
+        if new == row:
+            return False
+        self.cells[r] = new
         return True
 
     def spawn(self, sym):

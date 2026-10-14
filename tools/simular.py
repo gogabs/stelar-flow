@@ -93,7 +93,7 @@ def play(policy, rings, seed, max_turns=2000):
 
 def main():
     games = int(sys.argv[1]) if len(sys.argv) > 1 else 20
-    rings = int(sys.argv[2]) if len(sys.argv) > 2 else 2
+    rings = int(sys.argv[2]) if len(sys.argv) > 2 else 3
     for name, policy in (("aleatório", rand), ("guloso", greedy)):
         results = [play(policy, rings, s) for s in range(games)]
         turns = [r["turns"] for r in results]

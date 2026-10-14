@@ -21,9 +21,9 @@ Feito em Python com a biblioteca do
 | Esquerda / direita | Anda pelo anel |
 | B | Colapso gravitacional |
 | X | Pressão de radiação (3 de energia) |
-| L1 / R1 | Gira o anel em foco |
-| Select | Elemento em foco e com o que funde |
-| A | Lê o anel inteiro |
+| L1 / R1 | Desliza o anel em foco, juntando os elementos (como no 2048) |
+| A | O que o próximo colapso faz com a casa em foco |
+| Select | Lê o anel inteiro |
 | Y | Pontos, energia, ferro, turno |
 | Start | Pausa |
 
