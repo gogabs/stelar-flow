@@ -26,11 +26,22 @@ ouvindo.
 | **Total** | **37** |
 
 As casas de cada anel são numeradas no sentido horário a partir da frente.
-As posições são faladas ao navegar ("Hélio, 3"), contando de 1 no sentido
-horário a partir da frente. No colapso, as posições 1 e 2 do anel 2 caem na
-posição 1 do anel 1, as 3 e 4 na posição 2, e assim por diante. Do anel 3
-para o 2, a cada três posições, as duas primeiras caem na mesma casa: 1 e 2
-na posição 1, 3 na 2, 4 e 5 na 3, 6 na 4.
+Cada casa tem um nome, falado ao navegar ("Hélio, Órion Rigel"), e **o
+nome diz para onde ela cai no colapso** (ideia do Gabs, 14/10):
+
+- **Anel 1:** constelações, no sentido horário a partir da frente: Órion,
+  Escorpião, Lira, Touro, Cisne, Gêmeos.
+- **Anel 2:** a constelação onde a casa cai mais uma estrela dela: Órion
+  Betelgeuse, Órion Rigel, Escorpião Antares, Escorpião Sargas, Lira Vega,
+  Lira Sulafat, Touro Aldebarã, Touro Alcione, Cisne Deneb, Cisne Albireo,
+  Gêmeos Castor, Gêmeos Pólux.
+- **Anel 3:** a estrela onde a casa cai mais uma letra grega: Órion
+  Betelgeuse alfa, Órion Betelgeuse beta, Órion Rigel alfa, Escorpião
+  Antares alfa... Como 18 casas caem em 12, metade das estrelas recebe duas
+  casas (alfa e beta) e a outra metade, uma (só alfa).
+
+Órion Rigel alfa cai em Órion Rigel, que cai em Órion, que cai no núcleo.
+Os nomes ficam nas casas; quando o anel desliza, os elementos mudam de casa.
 
 Cada casa tem uma direção (frente, direita, trás, esquerda e as do meio),
 igual em todos os anéis. No colapso, cada casa cai na casa do anel de
@@ -50,7 +61,7 @@ juntar energia e soprar até o núcleo para fora de uma vez.
 | X | Pressão de radiação | sim |
 | L1 / R1 | Rotação orbital: desliza o anel em foco para a esquerda / direita, juntando os elementos | sim |
 | A | Prévia do colapso: para onde o elemento em foco cai, com quem funde e o que cai em cima da casa | não |
-| Select | Lê o anel em foco inteiro, da posição em foco para a direita | não |
+| Select | Lê o anel em foco inteiro, da casa em foco para a direita | não |
 | Y | Pontos, energia, quanto ferro há, turno | não |
 | Start | Pausa | — |
 
@@ -80,10 +91,10 @@ um elemento sem parceiro e a estrela morre cedo (testei isso nas
 simulações, seção 8).
 
 **Rotação orbital (L1/R1).** Como no 2048: os elementos do anel em foco
-deslizam e se juntam, sem vazios entre eles, usando a posição em foco como
-parede. Com R1 tudo desliza no sentido horário e para na posição em foco,
+deslizam e se juntam, sem vazios entre eles, usando a casa em foco como
+parede. Com R1 tudo desliza no sentido horário e para na casa em foco,
 um atrás do outro; com L1 desliza no sentido anti-horário e começa na
-posição em foco. A ordem dos elementos no anel não muda, nada funde e o
+casa em foco. A ordem dos elementos no anel não muda, nada funde e o
 ferro desliza junto. Se os elementos já estão juntos (ou o anel está
 cheio), o anel só gira uma casa. Serve para juntar elementos em cima de um
 alvo antes do colapso e para tirar elementos de cima do ferro. O núcleo não
@@ -219,12 +230,13 @@ buraco negro.
   esquerda), mais longe nos anéis de fora. A matéria nova toca um blip de
   onde entrou; cada fusão toca um arpejo de onde aconteceu.
 - **Falas curtas**:
-  - navegar: "Anel 2. Hélio, 3" ao trocar de anel; "Hélio, 3" ao andar;
-  - prévia (A): "Colapso: Hélio cai no anel 1, posição 2 e funde com o
-    carbono de lá: vira oxigênio.";
-  - colapso, até 3 fusões: "Fusão: hélio no núcleo e carbono no anel 1,
-    posição 4. Mais 20 pontos."; com mais, conta: "Fusão: 4 hélios e 1
-    carbono. Mais 44 pontos. No foco, carbono, 3.";
+  - navegar: "Anel 2. Hélio, Órion Rigel" ao trocar de anel; "Hélio,
+    Órion Rigel" ao andar;
+  - prévia (A): "Colapso: Hélio cai em Escorpião e funde com o carbono de
+    lá: vira oxigênio.";
+  - colapso, até 3 fusões: "Fusão: hélio no núcleo e carbono em Touro.
+    Mais 20 pontos."; com mais, conta: "Fusão: 4 hélios e 1 carbono. Mais
+    44 pontos. No foco, carbono, Lira.";
   - ferro: "1 elemento engolido pelo ferro."; "Cuidado, isso é ferro.";
   - pressão: "Pressão de radiação. Vento estelar levou 3 hidrogênios.
     Energia 2.";

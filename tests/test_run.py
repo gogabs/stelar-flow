@@ -47,7 +47,7 @@ class NavigationTest(unittest.TestCase):
         clear(run)
         run.board.set(1, 0, E.HE)
         run.ring_out()
-        self.assertEqual(ui.said[-1], "Anel 1. Hélio, 1")
+        self.assertEqual(ui.said[-1], "Anel 1. Hélio, Órion")
         self.assertEqual(ui.played[-1], ("elem_he", 1, 0.0))
 
     def test_edges(self):
@@ -67,7 +67,7 @@ class NavigationTest(unittest.TestCase):
         run.ring_out()
         run.step(-1)
         self.assertEqual(run.index, 5)
-        self.assertEqual(ui.said[-1], "Carbono, 6")
+        self.assertEqual(ui.said[-1], "Carbono, Gêmeos")
         run.step(1)
         self.assertEqual(run.index, 0)
 
@@ -110,7 +110,7 @@ class ActionTest(unittest.TestCase):
         run.board.set(2, 6, E.HE)
         run.collapse()
         self.assertEqual(run.score, int((4 + 12) * (1 + C.COMBO_STEP)))
-        self.assertIn("hélio no núcleo e carbono no anel 1, posição 4", ui.said[-1])
+        self.assertIn("hélio no núcleo e carbono em Touro", ui.said[-1])
 
     def test_collapse_that_moves_nothing_is_not_a_turn(self):
         run, ui, _ = new_run()
@@ -161,11 +161,11 @@ class ActionTest(unittest.TestCase):
         run.step(1)                  # foco na posição 2
         run.rotate(1)
         self.assertEqual(run.board.cells[1][:2], [E.HE, E.H])   # o hélio dá a volta por trás
-        self.assertIn("Anel 1 deslizou para a direita: os elementos se juntaram até a posição 2.",
+        self.assertIn("Anel 1 deslizou para a direita: os elementos se juntaram até Escorpião.",
                       ui.said[-1])
         run.rotate(-1)
         self.assertEqual(run.board.cells[1][1:3], [E.H, E.HE])
-        self.assertIn("a partir da posição 2", ui.said[-1])
+        self.assertIn("a partir de Escorpião", ui.said[-1])
 
     def test_full_star_chokes_into_iron(self):
         run, ui, _ = new_run()
@@ -223,7 +223,7 @@ class TextTest(unittest.TestCase):
         run.board.set(1, 3, E.HE)
         run.ring_out()
         self.assertEqual(run.ring_text(),
-                         "Anel 1, da posição 1 para a direita: hidrogênio, 2 vazios, hélio, 2 vazios.")
+                         "Anel 1, de Órion para a direita: hidrogênio, 2 vazios, hélio, 2 vazios.")
 
     def test_many_fusions_are_counted_instead_of_located(self):
         run, ui, _ = new_run()
@@ -283,18 +283,18 @@ class PreviewTest(unittest.TestCase):
         self.run.board.set(2, 1, E.HE)
         text = self.run.collapse_preview()
         self.assertIn("Hélio fica", text)
-        self.assertIn("O hélio do anel 2, posição 2 cai aqui e funde com o hélio: vira carbono.", text)
+        self.assertIn("O hélio de Órion Rigel cai aqui e funde com o hélio: vira carbono.", text)
 
     def test_empty_cell_receives(self):
         self.run.board.set(2, 0, E.H)
         self.assertEqual(self.run.collapse_preview(),
-                         "Colapso: Aqui cai o hidrogênio do anel 2, posição 1.")
+                         "Colapso: Aqui cai o hidrogênio de Órion Betelgeuse.")
 
     def test_iron(self):
         self.run.board.set(1, 0, E.FE)
         self.run.board.set(2, 1, E.C)
         self.assertEqual(self.run.collapse_preview(),
-                         "Colapso: Ferro não se move. O carbono do anel 2, posição 2 cai aqui e vira ferro.")
+                         "Colapso: Ferro não se move. O carbono de Órion Rigel cai aqui e vira ferro.")
 
     def test_nothing(self):
         self.assertEqual(self.run.collapse_preview(), "Colapso: nada acontece aqui.")
