@@ -152,6 +152,21 @@ class ActionTest(unittest.TestCase):
         self.assertEqual(run.turn, 1)
         self.assertEqual(sum(1 for c in run.board.cells[2] if c), 1)   # matéria nova
 
+    def test_rotation_slides_toward_focus(self):
+        run, ui, _ = new_run()
+        clear(run)
+        run.board.set(1, 0, E.H)
+        run.board.set(1, 3, E.HE)
+        run.ring_out()
+        run.step(1)                  # foco na posição 2
+        run.rotate(1)
+        self.assertEqual(run.board.cells[1][:2], [E.HE, E.H])   # o hélio dá a volta por trás
+        self.assertIn("Anel 1 deslizou para a direita: os elementos se juntaram até a posição 2.",
+                      ui.said[-1])
+        run.rotate(-1)
+        self.assertEqual(run.board.cells[1][1:3], [E.H, E.HE])
+        self.assertIn("a partir da posição 2", ui.said[-1])
+
     def test_full_star_chokes_into_iron(self):
         run, ui, _ = new_run()
         for r, i in run.board.all_cells():

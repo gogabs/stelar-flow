@@ -12,17 +12,22 @@ HELP = (
      "A grade é um hexágono: o núcleo no centro e anéis em volta. Cima vai para o anel de fora, "
      "baixo para o de dentro. Esquerda e direita andam pelo anel. O analógico esquerdo faz o "
      "mesmo. Ao andar, você ouve o elemento e a posição: as posições contam no sentido "
-     "horário a partir da frente, de 1 a 6 no anel 1 e de 1 a 12 no anel 2. No colapso, as "
-     "posições 1 e 2 do anel 2 caem na posição 1 do anel 1, as 3 e 4 na posição 2, e assim "
-     "por diante. Navegar não gasta turno. O som de cada elemento vem da direção da casa: frente, "
+     "horário a partir da frente: de 1 a 6 no anel 1, de 1 a 12 no anel 2 e de 1 a 18 no "
+     "anel 3. No colapso, as posições 1 e 2 do anel 2 caem na posição 1 do anel 1, as 3 e 4 "
+     "na posição 2, e assim por diante. Do anel 3 para o 2, a cada três posições, as duas "
+     "primeiras caem na mesma casa: 1 e 2 na posição 1, 3 na 2, 4 e 5 na 3, 6 na 4. Na dúvida, "
+     "aperte A. Navegar não gasta turno. O som de cada elemento vem da direção da casa: frente, "
      "direita, trás ou esquerda, e fica mais longe nos anéis de fora."),
     ("Ações",
      "B: colapso gravitacional. Tudo cai uma casa para dentro, e quem cai num parceiro funde. "
      "O núcleo vai primeiro, depois o anel 1, depois o 2; no mesmo anel, quem está mais perto "
      "do foco cai primeiro. "
      "X: pressão de radiação. Gasta %d de energia; o anel de fora é soprado para fora da estrela "
-     "e o resto sobe uma casa, abrindo espaço. L1 e R1: rotação orbital. O anel em foco gira "
-     "uma casa para a esquerda ou para a direita. Cada ação é um turno e traz matéria nova."
+     "e o resto sobe uma casa, abrindo espaço. L1 e R1: rotação orbital. Como no 2048, "
+     "os elementos do anel em foco deslizam e se juntam, sem vazios entre eles. R1 desliza para "
+     "a direita e eles param na posição em foco, um atrás do outro; L1 desliza para a esquerda e "
+     "eles começam na posição em foco. Se já estão juntos, o anel só gira uma casa. A ordem dos "
+     "elementos não muda e nada funde. Cada ação é um turno e traz matéria nova."
      % C.PRESSURE_COST),
     ("Informações",
      "A diz o que o próximo colapso faria com a casa em foco: para onde o elemento cai, com "

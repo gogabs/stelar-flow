@@ -183,10 +183,15 @@ class Run:
             self.ui.play("borda")
             self.ui.say("O núcleo não gira. Suba para um anel.")
             return False
-        self.board.rotate(self.ring, step)
+        side = "direita" if step > 0 else "esquerda"
+        if self.board.slide(self.ring, step, self.index):
+            text = "%s deslizou para a %s: os elementos se juntaram %s posição %d." % (
+                ring_name(self.ring), side, "até a" if step > 0 else "a partir da", self.index + 1)
+        else:   # já estavam juntos (ou o anel está cheio): gira uma casa
+            self.board.rotate(self.ring, step)
+            text = "%s girou para a %s." % (ring_name(self.ring), side)
         self.ui.play("rotacao")
-        self._end_turn(["%s girou para a %s." % (ring_name(self.ring),
-                                                  "direita" if step > 0 else "esquerda")])
+        self._end_turn([text])
         return True
 
     def _end_turn(self, parts):

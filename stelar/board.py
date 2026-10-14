@@ -160,12 +160,38 @@ class Board:
         return {"moves": moves, "ejected": ejected}
 
     def rotate(self, r, step):
-        """Gira o anel r; step=1 no sentido horário, -1 no anti-horário."""
+        """Gira o anel r uma casa; step=1 no sentido horário, -1 no anti-horário."""
         if r == 0:
             return False
         row = self.cells[r]
         step %= len(row)
         self.cells[r] = row[-step:] + row[:-step]
+        return True
+
+    def slide(self, r, step, anchor):
+        """Desliza os elementos do anel r no sentido de step até a casa anchor, como no 2048.
+
+        Com step=1 (horário) tudo anda no sentido horário e para ao bater na
+        casa anchor ou num elemento já parado: os elementos ficam juntos,
+        terminando em anchor. Com step=-1 é o espelho: começam em anchor e
+        seguem no sentido horário. A ordem dos elementos não muda e ninguém
+        funde. Devolve True se algo se moveu.
+        """
+        if r == 0:
+            return False
+        row = self.cells[r]
+        n = len(row)
+        if step > 0:   # sequência no sentido anti-horário a partir de anchor
+            order = [(anchor - k) % n for k in range(n)]
+        else:          # sequência no sentido horário a partir de anchor
+            order = [(anchor + k) % n for k in range(n)]
+        items = [row[i] for i in order if row[i] is not None]
+        new = list(row)
+        for k, i in enumerate(order):
+            new[i] = items[k] if k < len(items) else None
+        if new == row:
+            return False
+        self.cells[r] = new
         return True
 
     def spawn(self, sym):

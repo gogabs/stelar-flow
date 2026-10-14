@@ -17,24 +17,28 @@ ouvindo.
 
 ## 2. Grade
 
-| Anel | Casas | Total com 2 anéis | Total com 3 anéis |
-|---|---|---|---|
-| 0 (núcleo) | 1 | | |
-| 1 | 6 | | |
-| 2 | 12 | 19 | |
-| 3 | 18 | | 37 |
+| Anel | Casas |
+|---|---|
+| 0 (núcleo) | 1 |
+| 1 | 6 |
+| 2 | 12 |
+| 3 (o de fora) | 18 |
+| **Total** | **37** |
 
 As casas de cada anel são numeradas no sentido horário a partir da frente.
 As posições são faladas ao navegar ("Hélio, 3"), contando de 1 no sentido
-horário a partir da frente. Com 2 anéis, as posições 1 e 2 do anel 2 caem na
-posição 1 do anel 1, as 3 e 4 na posição 2, e assim por diante.
+horário a partir da frente. No colapso, as posições 1 e 2 do anel 2 caem na
+posição 1 do anel 1, as 3 e 4 na posição 2, e assim por diante. Do anel 3
+para o 2, a cada três posições, as duas primeiras caem na mesma casa: 1 e 2
+na posição 1, 3 na 2, 4 e 5 na 3, 6 na 4.
 
 Cada casa tem uma direção (frente, direita, trás, esquerda e as do meio),
 igual em todos os anéis. No colapso, cada casa cai na casa do anel de
-dentro na mesma direção; no anel 2, duas casas caem em cada casa do anel 1.
+dentro na mesma direção.
 
-**Tamanho:** 2 anéis por padrão. 3 anéis está no menu ("Tamanho da
-estrela") e tem recorde separado. **[decidir]** se fica só um.
+**Tamanho:** a estrela tem sempre 3 anéis (decidido em 14/10). A de 2 anéis
+(19 casas) era pequena demais e permitia partidas infinitas: dava para
+juntar energia e soprar até o núcleo para fora de uma vez.
 
 ## 3. Controles
 
@@ -44,7 +48,7 @@ estrela") e tem recorde separado. **[decidir]** se fica só um.
 | Esquerda / direita (ou analógico) | Anda pelo anel; segurar repete | não |
 | B | Colapso gravitacional | sim |
 | X | Pressão de radiação | sim |
-| L1 / R1 | Rotação orbital do anel em foco, para a esquerda / direita | sim |
+| L1 / R1 | Rotação orbital: desliza o anel em foco para a esquerda / direita, juntando os elementos | sim |
 | A | Prévia do colapso: para onde o elemento em foco cai, com quem funde e o que cai em cima da casa | não |
 | Select | Lê o anel em foco inteiro, da posição em foco para a direita | não |
 | Y | Pontos, energia, quanto ferro há, turno | não |
@@ -75,9 +79,15 @@ se move nem é soprado. É a válvula de escape: sem ela, o núcleo entope com
 um elemento sem parceiro e a estrela morre cedo (testei isso nas
 simulações, seção 8).
 
-**Rotação orbital (L1/R1).** Gira o anel em foco uma casa. Serve para
-alinhar pares antes do colapso e para tirar elementos de cima do ferro. O
-núcleo não gira.
+**Rotação orbital (L1/R1).** Como no 2048: os elementos do anel em foco
+deslizam e se juntam, sem vazios entre eles, usando a posição em foco como
+parede. Com R1 tudo desliza no sentido horário e para na posição em foco,
+um atrás do outro; com L1 desliza no sentido anti-horário e começa na
+posição em foco. A ordem dos elementos no anel não muda, nada funde e o
+ferro desliza junto. Se os elementos já estão juntos (ou o anel está
+cheio), o anel só gira uma casa. Serve para juntar elementos em cima de um
+alvo antes do colapso e para tirar elementos de cima do ferro. O núcleo não
+gira.
 
 **Depois de cada ação** entra matéria nova numa casa vazia do anel de fora:
 hidrogênio (80%), hélio (15%) ou carbono (5%), os três elementos básicos.
@@ -181,17 +191,19 @@ outros.
 
 `tools/simular.py` joga partidas com dois robôs: um que aperta qualquer
 coisa e um guloso, que testa cada ação e escolhe a que deixa a grade
-melhor. Resultado com os números atuais (20 partidas, 2 anéis):
+melhor. Resultado com os números atuais (20 partidas, 3 anéis, rotação
+que desliza):
 
 | Robô | Turnos (mediana) | Pontos (mediana) | Finais |
 |---|---|---|---|
-| Aleatório | 35 | 2 | anã branca de hélio e de carbono |
-| Guloso | 367 (130 a 1678) | 1823 (601 a 7567) | pulsar 14, buraco negro 4, estrela de nêutrons 2 |
+| Aleatório | 58 | 0 | anã branca de hélio 18, de carbono 2 |
+| Guloso | 265 (146 a 509) | 1636 (760 a 3109) | pulsar 20 |
 
-Com 3 anéis o guloso fica em 274 turnos e 1456 pontos. Antes de existir o
-vento estelar o guloso morria com 54 turnos: o núcleo entupia com um
-elemento sem parceiro (enxofre, por exemplo) e o anel de fora enchia de
-hidrogênio sem par.
+Antes de existir o vento estelar o guloso morria com uns 50 turnos: o
+núcleo entupia com um elemento sem parceiro (enxofre, por exemplo) e o anel
+de fora enchia de hidrogênio sem par. O guloso só olha uma jogada à frente
+e não chega aos 4000 pontos do buraco negro; se no console também ficar
+inalcançável, baixamos esse limite.
 
 Uma pessoa deve ficar entre os dois robôs no começo. Números para ajustar
 depois de jogar no console, todos em `stelar/config.py`: custo da pressão,
@@ -227,7 +239,6 @@ buraco negro.
 
 ## 10. Em aberto
 
-- **[decidir]** 2 ou 3 anéis, ou os dois como hoje.
 - **[decidir]** rotação gastar turno (hoje gasta). Sem gastar, o jogo vira
   um quebra-cabeça mais calmo e as partidas ficam bem mais longas.
 - **[decidir]** quais ideias da seção 7 entram.

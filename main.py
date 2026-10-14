@@ -28,7 +28,7 @@ for f in sorted(os.listdir(os.path.join(game.dir, "sounds"))):
         sounds[base] = game.sound.load(base, os.path.join("sounds", f))
 menu_sounds = {"move": sounds.get("menu_mover"), "select": sounds.get("menu_confirmar")}
 
-state = {"run": None, "rings": C.RINGS, "stick": None}
+state = {"run": None, "stick": None}
 
 
 # --- progresso -------------------------------------------------------------
@@ -40,7 +40,6 @@ def load_progress():
         data = {}
     data.setdefault("recordes", {})
     data.setdefault("finais", [])
-    data.setdefault("aneis", C.RINGS)
     return data
 
 
@@ -74,7 +73,7 @@ ui = UI()
 # --- fluxo -------------------------------------------------------------------
 def start_run():
     main_menu.close()
-    run = Run(ui, rings=state["rings"], on_over=game_over)
+    run = Run(ui, rings=C.RINGS, on_over=game_over)
     state["run"] = run
     run.start()
 
@@ -95,16 +94,11 @@ def game_over(summary):
     game.after(1.2, lambda: game.say(text, on_done=lambda done: main_menu.open(announce_help=False)))
 
 
-def ring_item():
-    return "Tamanho da estrela: %d anéis" % state["rings"]
-
-
 def progress_text():
     data = load_progress()
     parts = []
-    for rings in C.RING_CHOICES:
-        best = data["recordes"].get(str(rings))
-        parts.append("Recorde com %d anéis: %s." % (rings, "%d pontos" % best if best else "nenhum"))
+    best = data["recordes"].get(str(C.RINGS))
+    parts.append("Recorde: %s." % ("%d pontos" % best if best else "nenhum"))
     found = [f[1] for f in FATES if f[0] in data["finais"]]
     parts.append("Finais descobertos: %d de %d." % (len(found), len(FATES)))
     if found:
@@ -115,14 +109,6 @@ def progress_text():
 def on_main(index, item):
     if item == "Jogar":
         start_run()
-    elif item.startswith("Tamanho"):
-        choices = C.RING_CHOICES
-        state["rings"] = choices[(choices.index(state["rings"]) + 1) % len(choices)]
-        data = load_progress()
-        data["aneis"] = state["rings"]
-        save_progress(data)
-        main_menu.items[index] = ring_item()
-        game.say(main_menu.items[index])
     elif item == "Como jogar":
         main_menu.close()
         help_menu.open()
@@ -133,13 +119,13 @@ def on_main(index, item):
 
 
 main_menu = a11y.Menu(game, "Stelar Flow",
-                      ["Jogar", ring_item(), "Como jogar", "Recordes e finais", "Sair"],
+                      ["Jogar", "Como jogar", "Recordes e finais", "Sair"],
                       on_select=on_main, on_back=game.quit, sounds=menu_sounds)
 
 
 def close_help():
     help_menu.close()
-    main_menu.open(index=2, announce_help=False)
+    main_menu.open(index=1, announce_help=False)
 
 
 help_menu = a11y.Menu(game, "Como jogar", [t for t, _ in T.HELP] + ["Voltar"],
@@ -221,10 +207,6 @@ def axis(name, value, ms):
 
 @game.on_start
 def start():
-    state["rings"] = load_progress().get("aneis", C.RINGS)
-    if state["rings"] not in C.RING_CHOICES:
-        state["rings"] = C.RINGS
-    main_menu.items[1] = ring_item()
     main_menu.open()
 
 

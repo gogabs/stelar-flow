@@ -145,6 +145,39 @@ class PressureAndRotationTest(unittest.TestCase):
         self.assertFalse(self.b.rotate(0, 1))
 
 
+class SlideTest(unittest.TestCase):
+    def setUp(self):
+        self.b = Board(2, random.Random(1))
+
+    def test_clockwise_packs_ending_at_anchor(self):
+        self.b.set(1, 0, E.H)
+        self.b.set(1, 2, E.HE)
+        self.assertTrue(self.b.slide(1, 1, 4))
+        self.assertEqual(self.b.cells[1], [None, None, None, E.H, E.HE, None])
+
+    def test_counterclockwise_packs_starting_at_anchor(self):
+        self.b.set(1, 0, E.H)
+        self.b.set(1, 2, E.HE)
+        self.b.set(1, 5, E.C)
+        self.assertTrue(self.b.slide(1, -1, 1))
+        self.assertEqual(self.b.cells[1], [None, E.HE, E.C, E.H, None, None])
+
+    def test_order_kept_and_iron_slides_too(self):
+        self.b.set(2, 1, E.FE)
+        self.b.set(2, 7, E.O)
+        self.assertTrue(self.b.slide(2, 1, 0))
+        self.assertEqual(self.b.get(2, 0), E.O)
+        self.assertEqual(self.b.get(2, 11), E.FE)
+
+    def test_nothing_to_pack(self):
+        self.b.set(1, 3, E.H)
+        self.assertFalse(self.b.slide(1, 1, 3))
+        for i in range(6):
+            self.b.set(1, i, E.H)
+        self.assertFalse(self.b.slide(1, -1, 0))
+        self.assertFalse(self.b.slide(0, 1, 0))
+
+
 class SpawnAndDeathTest(unittest.TestCase):
     def test_spawn_goes_to_outer_ring(self):
         b = Board(3, random.Random(2))
