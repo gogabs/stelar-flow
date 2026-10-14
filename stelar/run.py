@@ -207,7 +207,8 @@ class Run:
             self.ui.say(" ".join(parts))
             self.finish()
             return
-        parts.append("No foco, %s." % self.focus_label().lower())
+        label = self.focus_label()
+        parts.append("No foco, %s." % (label[0].lower() + label[1:]))
         self.ui.say(" ".join(parts))
 
     def finish(self):
@@ -268,7 +269,7 @@ class Run:
             name = E.name(ev[3]).lower()
             if src == cell:
                 if kind == "cai":
-                    parts.append("%s cai %s, que está vazio." % (E.name(sym), at(dst)))
+                    parts.append("%s cai %s, que está livre." % (E.name(sym), at(dst)))
                 elif kind == "funde":
                     parts.append("%s cai %s e funde com o %s de lá: vira %s." % (
                         E.name(sym), at(dst), E.name(ev[4]).lower(), E.name(ev[5]).lower()))

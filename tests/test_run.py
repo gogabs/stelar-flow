@@ -161,6 +161,7 @@ class ActionTest(unittest.TestCase):
         run.step(1)                  # foco na posição 2
         run.rotate(1)
         self.assertEqual(run.board.cells[1][:2], [E.HE, E.H])   # o hélio dá a volta por trás
+        self.assertIn("No foco, hidrogênio, Escorpião.", ui.said[-1])
         self.assertIn("Anel 1 deslizou para a direita: os elementos se juntaram até Escorpião.",
                       ui.said[-1])
         run.rotate(-1)
@@ -250,7 +251,7 @@ class PreviewTest(unittest.TestCase):
 
     def test_falls_into_empty_cell(self):
         self.run.board.set(1, 0, E.H)
-        self.assertEqual(self.run.collapse_preview(), "Colapso: Hidrogênio cai no núcleo, que está vazio.")
+        self.assertEqual(self.run.collapse_preview(), "Colapso: Hidrogênio cai no núcleo, que está livre.")
 
     def test_fuses_with_what_is_inside(self):
         self.run.board.set(0, 0, E.C)
