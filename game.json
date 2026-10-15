@@ -2,7 +2,7 @@
   "id": "stelar-flow",
   "name": "Stelar Flow",
   "description": "Funda elementos numa estrela antes que o ferro tome conta.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "contract": 1,
   "runtime": "python3",
   "exec": "main.py",

@@ -53,6 +53,51 @@ class Run:
         self.ui.say("A estrela acendeu, com %d anéis em volta do núcleo. Hidrogênio entrando "
                     "pelo anel de fora. Você está no núcleo, vazio." % self.rings)
 
+    # --- partida salva -------------------------------------------------
+    SAVE_VERSION = 1
+
+    def to_dict(self):
+        """Tudo o que a partida precisa para continuar depois, em JSON.
+
+        Guarda também o sorteio: quem continua recebe a mesma matéria nova que
+        receberia sem sair.
+        """
+        version, internal, gauss = self.rng.getstate()
+        return {"versao": self.SAVE_VERSION, "rings": self.rings, "cells": self.board.cells,
+                "ring": self.ring, "angle": self.angle, "score": self.score,
+                "energy": self.energy, "turn": self.turn, "heaviest": self.heaviest,
+                "made": self.made, "ejected": self.ejected,
+                "rng": [version, list(internal), gauss]}
+
+    @classmethod
+    def from_dict(cls, ui, data, on_over=None):
+        """Recria a partida salva por to_dict. ValueError se o arquivo não serve."""
+        try:
+            if data["versao"] != cls.SAVE_VERSION:
+                raise ValueError("versão de save desconhecida")
+            rng = random.Random()
+            version, internal, gauss = data["rng"]
+            rng.setstate((version, tuple(internal), gauss))
+            run = cls(ui, rings=data["rings"], rng=rng, on_over=on_over)
+            cells = data["cells"]
+            if [len(row) for row in cells] != [len(row) for row in run.board.cells]:
+                raise ValueError("grade com tamanho errado")
+            run.board.cells = [list(row) for row in cells]
+            run.ring, run.angle = data["ring"], float(data["angle"])
+            run.score, run.energy, run.turn = data["score"], data["energy"], data["turn"]
+            run.heaviest = data["heaviest"]
+            run.made, run.ejected = dict(data["made"]), dict(data["ejected"])
+        except (KeyError, TypeError, IndexError) as exc:
+            raise ValueError("partida salva incompleta: %s" % exc)
+        return run
+
+    def resume(self):
+        """Anuncia a volta de uma partida salva."""
+        self.ui.play("inicio")
+        label = self.focus_label()
+        self.ui.say("Partida retomada no turno %d, com %d pontos e energia %d. %s. %s." % (
+            self.turn, self.score, self.energy, ring_name(self.ring), label))
+
     # --- foco ------------------------------------------------------------
     @property
     def index(self):

@@ -21,6 +21,7 @@ from stelar.run import Run
 
 game = a11y.Game(repeat=True, axes=True)
 SAVE_FILE = os.path.join(game.save_dir, "progresso.json")
+RUN_FILE = os.path.join(game.save_dir, "partida.json")   # um espaço só
 sounds = {}
 for f in sorted(os.listdir(os.path.join(game.dir, "sounds"))):
     base, ext = os.path.splitext(f)
@@ -46,6 +47,27 @@ def load_progress():
 def save_progress(data):
     with open(SAVE_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
+
+
+# --- partida salva -----------------------------------------------------------
+def has_saved_run():
+    return os.path.isfile(RUN_FILE)
+
+
+def save_run(run):
+    """Grava a partida em andamento por cima da anterior (arquivo temporário e troca,
+    para um desligamento no meio não deixar o save pela metade)."""
+    tmp = RUN_FILE + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(run.to_dict(), f, ensure_ascii=False)
+    os.replace(tmp, RUN_FILE)
+
+
+def drop_saved_run():
+    try:
+        os.remove(RUN_FILE)
+    except OSError:
+        pass
 
 
 # --- som e fala --------------------------------------------------------------
@@ -76,6 +98,28 @@ def start_run():
     run = Run(ui, rings=C.RINGS, on_over=game_over)
     state["run"] = run
     run.start()
+    if has_saved_run():
+        game.say("A partida salva continua guardada. Salvar esta partida substitui aquela.",
+                 queue=True)
+
+
+def continue_run():
+    """Retoma a partida salva. O save é usado uma vez: sair do jogo ou escolher
+    "Salvar e sair" grava de novo."""
+    try:
+        with open(RUN_FILE, encoding="utf-8") as f:
+            run = Run.from_dict(ui, json.load(f), on_over=game_over)
+    except (OSError, ValueError) as exc:
+        print("[stelar] partida salva ilegível: %s" % exc, file=sys.stderr)
+        drop_saved_run()
+        main_menu.close()
+        game.say("Não deu para ler a partida salva. Ela foi descartada.",
+                 on_done=lambda done: open_main())
+        return
+    drop_saved_run()
+    main_menu.close()
+    state["run"] = run
+    run.resume()
 
 
 def game_over(summary):
@@ -91,7 +135,7 @@ def game_over(summary):
         data["recordes"][key] = summary["score"]
     save_progress(data)
     state["run"] = None
-    game.after(1.2, lambda: game.say(text, on_done=lambda done: main_menu.open(announce_help=False)))
+    game.after(1.2, lambda: game.say(text, on_done=lambda done: open_main()))
 
 
 def progress_text():
@@ -106,8 +150,23 @@ def progress_text():
     return " ".join(parts)
 
 
+def main_items():
+    if has_saved_run():
+        return ["Continuar partida salva", "Novo jogo", "Como jogar", "Recordes e finais", "Sair"]
+    return ["Jogar", "Como jogar", "Recordes e finais", "Sair"]
+
+
+def open_main(item=None, announce_help=False):
+    """Abre o menu principal, com "Continuar partida salva" no topo se houver save."""
+    main_menu.items = main_items()
+    index = main_menu.items.index(item) if item in main_menu.items else 0
+    main_menu.open(index=index, announce_help=announce_help)
+
+
 def on_main(index, item):
-    if item == "Jogar":
+    if item == "Continuar partida salva":
+        continue_run()
+    elif item in ("Jogar", "Novo jogo"):
         start_run()
     elif item == "Como jogar":
         main_menu.close()
@@ -118,14 +177,13 @@ def on_main(index, item):
         game.quit()
 
 
-main_menu = a11y.Menu(game, "Stelar Flow",
-                      ["Jogar", "Como jogar", "Recordes e finais", "Sair"],
+main_menu = a11y.Menu(game, "Stelar Flow", main_items(),
                       on_select=on_main, on_back=game.quit, sounds=menu_sounds)
 
 
 def close_help():
     help_menu.close()
-    main_menu.open(index=1, announce_help=False)
+    open_main("Como jogar")
 
 
 help_menu = a11y.Menu(game, "Como jogar", [t for t, _ in T.HELP] + ["Voltar"],
@@ -140,10 +198,15 @@ def on_pause(index, item):
         run.announce_focus(with_ring=True)
         return
     state["run"] = None
-    main_menu.open(announce_help=False)
+    if item == "Salvar e sair para o menu":
+        save_run(run)
+        game.say("Partida salva. Para voltar a ela, escolha Continuar partida salva no menu.",
+                 on_done=lambda done: open_main())
+        return
+    open_main()
 
 
-pause_menu = a11y.Menu(game, "Pausa", ["Continuar", "Sair para o menu"],
+pause_menu = a11y.Menu(game, "Pausa", ["Continuar", "Salvar e sair para o menu", "Sair sem salvar"],
                        on_select=on_pause, on_back=lambda: on_pause(0, "Continuar"),
                        sounds=menu_sounds)
 
@@ -207,7 +270,15 @@ def axis(name, value, ms):
 
 @game.on_start
 def start():
-    main_menu.open()
+    open_main(announce_help=True)
+
+
+@game.on_quit
+def quit_saving():
+    """Fechar o jogo no meio de uma partida (Sair, desligar, Fn + Start) guarda ela."""
+    run = state["run"]
+    if run is not None and not run.over:
+        save_run(run)
 
 
 game.run()

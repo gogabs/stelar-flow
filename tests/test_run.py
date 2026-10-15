@@ -317,5 +317,56 @@ class PreviewTest(unittest.TestCase):
                 self.assertEqual(" cai no " in text and "ferro" not in text.split(".")[0], moved, text)
 
 
+class SaveTest(unittest.TestCase):
+    def play_some(self, run):
+        for action in (run.collapse, lambda: run.rotate(1), run.collapse, run.pressure):
+            run.ring_out()
+            action()
+
+    def test_round_trip_through_json_keeps_everything(self):
+        import json
+        run, _, _ = new_run(rings=3, seed=7)
+        run.start()
+        self.play_some(run)
+        data = json.loads(json.dumps(run.to_dict()))
+        loaded = Run.from_dict(FakeUI(), data)
+        for attr in ("rings", "ring", "angle", "score", "energy", "turn", "heaviest",
+                     "made", "ejected"):
+            self.assertEqual(getattr(loaded, attr), getattr(run, attr), attr)
+        self.assertEqual(loaded.board.cells, run.board.cells)
+
+    def test_loaded_run_continues_exactly_like_the_original(self):
+        import json
+        run, _, _ = new_run(rings=3, seed=3)
+        run.start()
+        self.play_some(run)
+        loaded = Run.from_dict(FakeUI(), json.loads(json.dumps(run.to_dict())))
+        for r in (run, loaded):
+            for _ in range(15):
+                if r.over:
+                    break
+                r.collapse()
+                r.rotate(1)
+        self.assertEqual(loaded.board.cells, run.board.cells)
+        self.assertEqual((loaded.score, loaded.turn), (run.score, run.turn))
+
+    def test_resume_announces_turn_score_and_focus(self):
+        run, _, _ = new_run(rings=3)
+        run.start()
+        run.collapse()
+        ui = FakeUI()
+        loaded = Run.from_dict(ui, run.to_dict())
+        loaded.resume()
+        self.assertIn("Partida retomada no turno 1", ui.said[-1])
+        self.assertIn("Núcleo", ui.said[-1])
+
+    def test_bad_save_raises_value_error(self):
+        run, _, _ = new_run(rings=3)
+        good = run.to_dict()
+        for bad in ({}, dict(good, versao=99), dict(good, cells=[[None]]), dict(good, rng=None)):
+            with self.assertRaises(ValueError):
+                Run.from_dict(FakeUI(), bad)
+
+
 if __name__ == "__main__":
     unittest.main()
