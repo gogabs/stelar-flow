@@ -63,10 +63,18 @@ juntar energia e soprar até o núcleo para fora de uma vez.
 | A | Prévia do colapso: para onde o elemento em foco cai, com quem funde e o que cai em cima da casa | não |
 | Select | Lê o anel em foco inteiro, da casa em foco para a direita | não |
 | Y | Pontos, energia, quanto ferro há, turno | não |
-| Start | Pausa | — |
+| Start | Pausa (continuar, salvar e sair, sair sem salvar) | — |
 
 B e X ficam em cima e embaixo de propósito: o botão de baixo puxa para
 dentro, o de cima empurra para fora.
+
+**Partida salva.** Um espaço só, em `partida.json` na pasta de saves (ao
+lado de `progresso.json`). A pausa tem "Salvar e sair para o menu"; fechar
+o jogo no meio de uma partida também salva. Com save, o menu principal
+abre em "Continuar partida salva", seguido de "Novo jogo". O save guarda a
+grade, o foco, os pontos, a energia, o turno e o estado do sorteio, então
+a matéria nova é a mesma que viria sem sair. Ele é consumido ao continuar,
+para não dar para voltar atrás numa jogada ruim.
 
 ## 4. Ações
 

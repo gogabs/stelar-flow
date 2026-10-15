@@ -25,7 +25,7 @@ Feito em Python com a biblioteca do
 | A | O que o próximo colapso faz com a casa em foco |
 | Select | Lê o anel inteiro |
 | Y | Pontos, energia, ferro, turno |
-| Start | Pausa |
+| Start | Pausa; dá para salvar e continuar depois pelo menu |
 
 ## Rodar
 

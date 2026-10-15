@@ -33,6 +33,10 @@ HELP = (
      "A diz o que o próximo colapso faria com a casa em foco: para onde o elemento cai, com "
      "quem funde e o que cai em cima dela. Select lê o anel em foco inteiro, do foco para a "
      "direita. Y fala pontos, energia, quanto ferro há e o turno. Start pausa."),
+    ("Salvar",
+     "Na pausa, Salvar e sair para o menu guarda a partida. No menu principal, Continuar "
+     "partida salva volta nela do mesmo ponto. Há um espaço só: salvar outra partida "
+     "substitui a anterior. Fechar o jogo no meio de uma partida também salva."),
     ("Fusões",
      "Iguais fundem: hidrogênio com hidrogênio dá hélio; hélio com hélio, carbono; carbono com "
      "carbono, neônio; oxigênio com oxigênio, silício; silício com silício ou enxofre com "
