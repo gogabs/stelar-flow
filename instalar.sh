@@ -20,7 +20,7 @@ fi
 [ -d "$SDK_PY" ] || { echo "SDK não encontrado."; exit 1; }
 echo "SDK selecionada: $SDK_PY"
 
-if ssh "$HOST" 'for p in /proc/[0-9]*; do readlink "$p/cwd"; done 2>/dev/null | grep -q "^/opt/a11y/games/stelar-flow"'; then
+if ssh "$HOST" 'for p in /proc/[0-9]*; do readlink "$p/cwd"; done 2>/dev/null | grep -Eq "^/(roms|opt)/a11y/games/stelar-flow(/|$)"'; then
   echo "O Stelar Flow está aberto no console. Feche o jogo e rode de novo."
   exit 1
 fi
@@ -32,8 +32,9 @@ cp -r "$HERE/game.json" "$HERE/main.py" "$HERE/stelar" "$HERE/sounds" "$HERE/gra
 find "$PKG" -name __pycache__ -prune -exec rm -rf {} +
 
 tar -C "$PKG" -czf - stelar-flow | ssh "$HOST" '
-  set -e; cd /opt/a11y/games
+  set -e; mkdir -p /roms/a11y/games; cd /roms/a11y/games
   rm -rf .stelar-flow.novo && mkdir .stelar-flow.novo
-  tar -xzf - -C .stelar-flow.novo
+  tar -xzmf - -C .stelar-flow.novo
   rm -rf stelar-flow && mv .stelar-flow.novo/stelar-flow . && rmdir .stelar-flow.novo
-  echo "instalado: $(ls stelar-flow/sounds | wc -l) sons"; df -h /opt/a11y | tail -1'
+  rm -rf /opt/a11y/games/stelar-flow
+  echo "instalado: $(ls stelar-flow/sounds | wc -l) sons"; df -h /roms | tail -1'
