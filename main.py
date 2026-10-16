@@ -16,6 +16,7 @@ import r36s_a11y as a11y
 from stelar import config as C
 from stelar import elements as E
 from stelar import texts as T
+from stelar.desenho import Renderer
 from stelar.fates import BY_ID, FATES
 from stelar.run import Run
 
@@ -280,5 +281,9 @@ def quit_saving():
     if run is not None and not run.over:
         save_run(run)
 
+
+# Tela opcional: mostra a estrela e a última fala como legenda. Desliga sozinha
+# com a tela desligada no sistema ou se o vídeo falhar.
+Renderer(game, lambda: state["run"])
 
 game.run()

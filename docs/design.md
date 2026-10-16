@@ -264,4 +264,4 @@ buraco negro.
 - **[decidir]** quais ideias da seção 7 entram.
 - Tutorial guiado (como o do Dead vs. Alive), depois que as regras
   firmarem.
-- Gráficos opcionais (a grade hexagonal desenhada, com cores por elemento).
+- ~~Gráficos opcionais~~: feitos, veja [graficos.md](graficos.md).
