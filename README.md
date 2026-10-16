@@ -27,6 +27,13 @@ Feito em Python com a biblioteca do
 | Y | Pontos, energia, ferro, turno |
 | Start | Pausa; dá para salvar e continuar depois pelo menu |
 
+## Tela
+
+Opcional: a estrela desenhada em hexágonos, com uma cor e o símbolo de cada
+elemento, o foco em amarelo, os pontos e a energia ao lado e a última fala
+como legenda. Tudo o que aparece também é falado; com a tela desligada no
+sistema, o jogo não desenha nada. Detalhes em [docs/graficos.md](docs/graficos.md).
+
 ## Rodar
 
 No PC (Windows, com o SDK clonado ao lado ou a cópia em `r36s_a11y/`):
@@ -47,6 +54,8 @@ No console, com o SDK clonado ao lado deste repositório:
 python3 -m unittest discover -s tests   # testes
 python3 tools/simular.py 20 2           # equilíbrio com jogadores automáticos
 python3 tools/gerar_sons.py             # sons provisórios
+python3 tools/gerar_graficos.py         # graficos/casas.png (precisa do Pillow)
+python3 tools/previa.py prévias         # telas de exemplo em PNG
 ```
 
 Os números do equilíbrio ficam em `stelar/config.py`. A lógica em `stelar/`

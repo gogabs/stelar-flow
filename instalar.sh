@@ -28,7 +28,7 @@ fi
 PKG=$(mktemp -d)
 trap 'rm -rf "$PKG"' EXIT
 mkdir -p "$PKG/stelar-flow"
-cp -r "$HERE/game.json" "$HERE/main.py" "$HERE/stelar" "$HERE/sounds" "$SDK_PY" "$PKG/stelar-flow/"
+cp -r "$HERE/game.json" "$HERE/main.py" "$HERE/stelar" "$HERE/sounds" "$HERE/graficos" "$SDK_PY" "$PKG/stelar-flow/"
 find "$PKG" -name __pycache__ -prune -exec rm -rf {} +
 
 tar -C "$PKG" -czf - stelar-flow | ssh "$HOST" '
