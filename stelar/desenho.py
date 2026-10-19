@@ -6,7 +6,7 @@ fala; o painel do lado mostra o mesmo que o Y; a legenda embaixo é a última
 fala. A tela segue a opção do sistema (SCREEN=0 desliga) e a economia de
 energia (menos quadros por segundo), como no Campo Minado e na Paciência.
 
-`draw_frame(gfx, ...)` só usa a API de desenho do SDK, então roda com o SDK de
+`draw_frame(gfx, ...)` só usa a API de desenho do Mage Core, então roda com o Mage Core de
 verdade, com o gráfico de mentira dos testes e com o do gerador de prévias.
 
 A grade é a de um favo de mel com hexágonos de lado reto em cima: o anel r tem

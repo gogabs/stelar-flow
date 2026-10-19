@@ -36,13 +36,13 @@ sistema, o jogo não desenha nada. Detalhes em [docs/graficos.md](docs/graficos.
 
 ## Rodar
 
-No PC (Windows, com o SDK clonado ao lado ou a cópia em `r36s_a11y/`):
+No PC (Windows, com o Mage Core clonado ao lado ou a cópia em `r36s_a11y/`):
 
 ```bat
 python main.py
 ```
 
-No console, com o SDK clonado ao lado deste repositório:
+No console, com o Mage Core clonado ao lado deste repositório:
 
 ```bash
 ./instalar.sh
@@ -59,4 +59,4 @@ python3 tools/previa.py prévias         # telas de exemplo em PNG
 ```
 
 Os números do equilíbrio ficam em `stelar/config.py`. A lógica em `stelar/`
-não toca som nem fala; `main.py` liga a partida ao SDK.
+não toca som nem fala; `main.py` liga a partida ao Mage Core.
